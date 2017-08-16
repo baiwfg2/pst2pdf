@@ -9,6 +9,7 @@ import com.pff.PSTFolder;
 import com.pff.PSTMessage;
 
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.Vector;
 
 /**
@@ -37,12 +38,14 @@ class Handler implements Runnable {
     private Document doc;
     private BaseFont baseFont;
     private Font font;
+    private FileWriter fw;
 
     Handler(String f) throws Exception {
         if (!f.endsWith(".pst")) {
             System.out.println(f + " not end with .pst. ignore");
             fileIllegal = true;
         }
+        fw = new FileWriter("./pst.log");
         pstFile = new PSTFile(f);
         outfile = f.substring(0,f.length()-4) + ".pdf";
 
@@ -62,11 +65,14 @@ class Handler implements Runnable {
         if (!fileIllegal) {
             try {
                 processFolder(pstFile.getRootFolder());
+                fw.close();
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                doc.close();
             }
         }
-        doc.close();
+
     }
 
     private void processFolder(PSTFolder folder) throws Exception {
@@ -74,7 +80,7 @@ class Handler implements Runnable {
         // the root folder doesn't have a display name
         if (depth > 0) {
             printDepth();
-            System.out.println(folder.getDisplayName());
+            fw.write(folder.getDisplayName() + "\n");
         }
 
         // go through the folders...
@@ -96,7 +102,8 @@ class Handler implements Runnable {
 
                 doc.add(new Paragraph(subject,font));
                 doc.add(new Paragraph(body,font));
-                System.out.println("\tEmail: "+ subject + ",body:" + body);
+                fw.write("\tEmail: "+ subject + "\n");
+                //fw.write("\tEmail: "+ subject  + ",body:\n" + body + "\n");
                 email = (PSTMessage)folder.getNextChild();
             }
             depth--;
@@ -104,10 +111,10 @@ class Handler implements Runnable {
         depth--;
     }
 
-    private void printDepth() {
+    private void printDepth() throws Exception{
         for (int x = 0; x < depth-1; x++) {
-            System.out.print(" | ");
+            fw.write(" | ");
         }
-        System.out.print(" |- ");
+        fw.write(" |- ");
     }
 }
