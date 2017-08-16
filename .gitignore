@@ -1,4 +1,5 @@
 .idea
 target
 .project
- pst-exporter.iml
+*.iml
+dependency-reduced-pom.xml
