@@ -28,8 +28,23 @@ public class PdfGenerator {
         // 3.打开文档
         document.open();
 
-        // 4.添加一个内容段落
-        document.add(new Paragraph("Hello World!"));
+        // 4.添加一个内容段落，当英文和中文一起显示时，这种字体不好看
+        BaseFont baseFont1 = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+
+        //方法一：使用Windows系统字体(TrueType)
+        //msyh是微软雅黑，msyh.ttc、msyhl.ttc和msyhbd.ttc，分别为标准的，细体的和粗体的
+        //https://max.book118.com/html/2017/0111/82461508.shtm
+        BaseFont baseFont2 = BaseFont.createFont("C:/Windows/Fonts/msyh.ttc,1", BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
+
+        //方法二：使用iTextAsian.jar中的字体(此为乱码)
+        //BaseFont baseFont3 = BaseFont.createFont("STSong-Light", BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
+
+        //方法三：使用资源字体(ClassPath)
+        //BaseFont baseFont4 = BaseFont.createFont("/couri.TTF",BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
+
+        Font blueFont = new Font(baseFont2);
+        blueFont.setColor(BaseColor.BLUE);
+        document.add(new Paragraph("hello,world我要 测试a",blueFont));
 
         writeProperty(document);
         writeList(document);
